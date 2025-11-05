@@ -1,0 +1,1404 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PH Car Rental - Book Your Ride</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background-color: #f5f5f5;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* Header */
+        header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 1.5rem 0;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .logo h1 {
+            font-size: 2rem;
+            margin-bottom: 0.25rem;
+        }
+
+        .logo p {
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .user-name {
+            font-weight: 600;
+        }
+
+        /* Auth Container */
+        .auth-container {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+
+        .auth-box {
+            background: white;
+            border-radius: 12px;
+            padding: 2.5rem;
+            width: 100%;
+            max-width: 450px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+
+        .auth-box h2 {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+            color: #1f2937;
+            text-align: center;
+        }
+
+        .auth-box p {
+            text-align: center;
+            color: #6b7280;
+            margin-bottom: 2rem;
+        }
+
+        /* Navigation Tabs */
+        .tabs {
+            background: white;
+            margin: 2rem 0;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .tab-buttons {
+            display: flex;
+            border-bottom: 2px solid #e5e7eb;
+        }
+
+        .tab-button {
+            flex: 1;
+            padding: 1rem;
+            background: white;
+            border: none;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            color: #6b7280;
+            transition: all 0.3s;
+        }
+
+        .tab-button:hover {
+            background: #f9fafb;
+        }
+
+        .tab-button.active {
+            color: #667eea;
+            border-bottom: 3px solid #667eea;
+        }
+
+        .tab-content {
+            display: none;
+            padding: 2rem;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        /* Search and Filters */
+        .filters {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .search-box {
+            flex: 1;
+            min-width: 250px;
+            position: relative;
+        }
+
+        .search-box input,
+        .filter-select {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border-color 0.3s;
+        }
+
+        .search-box input:focus,
+        .filter-select:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        /* Car Grid */
+        .car-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .car-card {
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .car-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.15);
+        }
+
+        .car-image {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+
+        .car-info {
+            padding: 1.5rem;
+        }
+
+        .car-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            margin-bottom: 0.5rem;
+        }
+
+        .car-title {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: #1f2937;
+        }
+
+        .badge {
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .badge.available {
+            background: #d1fae5;
+            color: #065f46;
+        }
+
+        .badge.booked {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .car-type {
+            display: inline-block;
+            padding: 0.25rem 0.5rem;
+            background: #f3f4f6;
+            border-radius: 4px;
+            font-size: 0.875rem;
+            color: #6b7280;
+            margin-bottom: 1rem;
+        }
+
+        .car-description {
+            color: #6b7280;
+            font-size: 0.9rem;
+            margin-bottom: 1rem;
+            line-height: 1.5;
+        }
+
+        .car-specs {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+            font-size: 0.875rem;
+            color: #6b7280;
+        }
+
+        .car-price {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #667eea;
+            margin-bottom: 1rem;
+        }
+
+        /* Buttons */
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            width: 100%;
+            display: inline-block;
+            text-align: center;
+            text-decoration: none;
+        }
+
+        .btn-primary {
+            background: #667eea;
+            color: white;
+        }
+
+        .btn-primary:hover:not(:disabled) {
+            background: #5568d3;
+            transform: translateY(-2px);
+        }
+
+        .btn-primary:disabled {
+            background: #9ca3af;
+            cursor: not-allowed;
+        }
+
+        .btn-secondary {
+            background: #f3f4f6;
+            color: #374151;
+        }
+
+        .btn-secondary:hover {
+            background: #e5e7eb;
+        }
+
+        .btn-danger {
+            background: #ef4444;
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #dc2626;
+        }
+
+        .btn-warning {
+            background: #f59e0b;
+            color: white;
+        }
+
+        .btn-warning:hover {
+            background: #d97706;
+        }
+
+        .btn-small {
+            padding: 0.5rem 1rem;
+            font-size: 0.875rem;
+        }
+
+        .btn-outline {
+            background: white;
+            color: #667eea;
+            border: 2px solid #667eea;
+        }
+
+        .btn-outline:hover {
+            background: #667eea;
+            color: white;
+        }
+
+        /* Forms */
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: #374151;
+        }
+
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            width: 100%;
+            padding: 0.75rem;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-family: inherit;
+            transition: border-color 0.3s;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+
+        .form-link {
+            text-align: center;
+            margin-top: 1rem;
+            color: #6b7280;
+        }
+
+        .form-link a {
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .form-link a:hover {
+            text-decoration: underline;
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+            overflow-y: auto;
+        }
+
+        .modal.active {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 12px;
+            width: 100%;
+            max-width: 600px;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            padding: 1.5rem;
+            border-bottom: 2px solid #e5e7eb;
+        }
+
+        .modal-header h2 {
+            font-size: 1.5rem;
+            color: #1f2937;
+        }
+
+        .modal-body {
+            padding: 1.5rem;
+        }
+
+        .booking-summary {
+            background: #f9fafb;
+            padding: 1.5rem;
+            border-radius: 8px;
+            margin-top: 1rem;
+        }
+
+        .summary-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.5rem;
+            color: #6b7280;
+        }
+
+        .summary-row.total {
+            font-weight: 700;
+            font-size: 1.2rem;
+            color: #667eea;
+            border-top: 2px solid #e5e7eb;
+            padding-top: 0.5rem;
+            margin-top: 0.5rem;
+        }
+
+        .modal-footer {
+            padding: 1.5rem;
+            border-top: 2px solid #e5e7eb;
+            display: flex;
+            gap: 1rem;
+        }
+
+        /* Bookings List */
+        .bookings-list {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .booking-card {
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .booking-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            margin-bottom: 1rem;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .booking-header h3 {
+            font-size: 1.3rem;
+            color: #1f2937;
+        }
+
+        .booking-id {
+            font-size: 0.875rem;
+            color: #6b7280;
+            margin-top: 0.25rem;
+        }
+
+        .booking-details {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .detail-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.9rem;
+            color: #6b7280;
+        }
+
+        .booking-actions {
+            display: flex;
+            gap: 0.5rem;
+            margin-top: 1rem;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 3rem;
+            color: #6b7280;
+        }
+
+        .empty-state h3 {
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        /* Toast Notification */
+        .toast {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            background: #1f2937;
+            color: white;
+            padding: 1rem 1.5rem;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+            z-index: 2000;
+            animation: slideIn 0.3s ease-out;
+            max-width: 400px;
+        }
+
+        .toast.success {
+            background: #059669;
+        }
+
+        .toast.error {
+            background: #dc2626;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(400px);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        /* Footer */
+        footer {
+            background: #1f2937;
+            color: white;
+            padding: 2rem 0;
+            margin-top: 4rem;
+            text-align: center;
+        }
+
+        footer p {
+            margin-bottom: 0.5rem;
+            opacity: 0.9;
+        }
+
+        /* Hidden */
+        .hidden {
+            display: none !important;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .car-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+
+            .logo h1 {
+                font-size: 1.5rem;
+            }
+
+            .tab-button {
+                font-size: 0.875rem;
+                padding: 0.75rem;
+            }
+
+            .toast {
+                bottom: 1rem;
+                right: 1rem;
+                left: 1rem;
+            }
+
+            .auth-box {
+                padding: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Authentication Container -->
+    <div id="authContainer" class="auth-container">
+        <!-- Sign In Form -->
+        <div id="signInForm" class="auth-box">
+            <h2>Welcome!</h2>
+            <p>Sign in to continue to PH Car Rental</p>
+            
+            <form onsubmit="handleSignIn(event)">
+                <div class="form-group">
+                    <label for="signInEmail">Email Address</label>
+                    <input type="email" id="signInEmail" required placeholder="juan@example.com">
+                </div>
+                
+                <div class="form-group">
+                    <label for="signInPassword">Password</label>
+                    <input type="password" id="signInPassword" required placeholder="Enter your password">
+                </div>
+                
+                <button type="submit" class="btn btn-primary">Sign In</button>
+                
+                <div class="form-link">
+                    Don't have an account? <a href="#" onclick="showSignUp(); return false;">Sign Up</a>
+                </div>
+            </form>
+        </div>
+
+        <!-- Sign Up Form -->
+        <div id="signUpForm" class="auth-box hidden">
+            <h2>Create Account</h2>
+            <p>Join PH Car Rental today</p>
+            
+            <form onsubmit="handleSignUp(event)">
+                <div class="form-group">
+                    <label for="signUpName">Full Name</label>
+                    <input type="text" id="signUpName" required placeholder="Juan Dela Cruz">
+                </div>
+
+                <div class="form-group">
+                    <label for="signUpEmail">Email Address</label>
+                    <input type="email" id="signUpEmail" required placeholder="juan@example.com">
+                </div>
+                
+                <div class="form-group">
+                    <label for="signUpPhone">Phone Number</label>
+                    <input type="tel" id="signUpPhone" required placeholder="+63 912 345 6789">
+                </div>
+                
+                <div class="form-group">
+                    <label for="signUpPassword">Password</label>
+                    <input type="password" id="signUpPassword" required placeholder="Create a password" minlength="6">
+                </div>
+                
+                <div class="form-group">
+                    <label for="signUpConfirmPassword">Confirm Password</label>
+                    <input type="password" id="signUpConfirmPassword" required placeholder="Confirm your password" minlength="6">
+                </div>
+                
+                <button type="submit" class="btn btn-primary">Sign Up</button>
+                
+                <div class="form-link">
+                    Already have an account? <a href="#" onclick="showSignIn(); return false;">Sign In</a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Main App Container -->
+    <div id="appContainer" class="hidden">
+        
+        <!-- Header -->
+        <header>
+            <div class="container">
+                <div class="header-content">
+                    <div class="logo">
+                        <h1>🚗 PH Car Rental</h1>
+                        <p>Affordable and reliable car rentals in the Philippines</p>
+                    </div>
+                    <div class="user-info">
+                        <span class="user-name">Welcome, <span id="currentUserName"></span></span>
+                        <button class="btn btn-outline btn-small" onclick="handleSignOut()">Sign Out</button>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="container">
+            <!-- Tabs -->
+            <div class="tabs">
+                <div class="tab-buttons">
+                    <button class="tab-button active" onclick="switchTab('browse')">Browse Cars</button>
+                    <button class="tab-button" onclick="switchTab('bookings')">My Bookings <span id="bookingCount"></span></button>
+                </div>
+
+                <!-- Browse Cars Tab -->
+                <div id="browseTab" class="tab-content active">
+                    <!-- Filters -->
+                    <div class="filters">
+                        <div class="search-box">
+                            <input type="text" id="searchInput" placeholder="🔍 Search by brand or model..." oninput="filterCars()">
+                        </div>
+                        <select class="filter-select" id="typeFilter" onchange="filterCars()">
+                            <option value="all">All Types</option>
+                            <option value="Sedan">Sedan</option>
+                            <option value="SUV">SUV</option>
+                            <option value="MPV">MPV</option>
+                            <option value="Hatchback">Hatchback</option>
+                            <option value="Pickup">Pickup</option>
+                        </select>
+                    </div>
+
+                    <div id="carCount" style="margin-bottom: 1rem; color: #6b7280;"></div>
+
+                    <!-- Car Grid -->
+                    <div id="carGrid" class="car-grid"></div>
+                </div>
+
+                <!-- Bookings Tab -->
+                <div id="bookingsTab" class="tab-content">
+                    <h2 style="margin-bottom: 1rem;">My Bookings</h2>
+                    <p style="color: #6b7280; margin-bottom: 2rem;">View and manage your car rental bookings</p>
+                    <div id="bookingsList" class="bookings-list"></div>
+                </div>
+            </div>
+        </main>
+
+        <!-- Booking Modal -->
+        <div id="bookingModal" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2 id="modalTitle">Book Your Car</h2>
+                </div>
+                <div class="modal-body">
+                    <form id="bookingForm">
+                        <input type="hidden" id="carId">
+                        <input type="hidden" id="bookingId">
+
+                        <h3 style="margin-bottom: 1rem;">Personal Information</h3>
+                        
+                        <div class="form-group">
+                            <label for="customerName">Full Name *</label>
+                            <input type="text" id="customerName" required placeholder="Juan Dela Cruz">
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="email">Email Address *</label>
+                                <input type="email" id="email" required placeholder="juan@example.com">
+                            </div>
+                            <div class="form-group">
+                                <label for="phoneNumber">Phone Number *</label>
+                                <input type="tel" id="phoneNumber" required placeholder="+63 912 345 6789">
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="destination">Destination *</label>
+                            <textarea id="destination" required placeholder="e.g., Baguio City, Tagaytay, Boracay, etc."></textarea>
+                        </div>
+
+                        <h3 style="margin-bottom: 1rem; margin-top: 1.5rem;">Rental Period</h3>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="startDate">Start Date *</label>
+                                <input type="date" id="startDate" required onchange="calculateTotal()">
+                            </div>
+                            <div class="form-group">
+                                <label for="endDate">End Date *</label>
+                                <input type="date" id="endDate" required onchange="calculateTotal()">
+                            </div>
+                        </div>
+
+                        <div id="bookingSummary" class="booking-summary" style="display: none;">
+                            <h3 style="margin-bottom: 1rem;">Booking Summary</h3>
+                            <div class="summary-row">
+                                <span>Car:</span>
+                                <span id="summaryCarName"></span>
+                            </div>
+                            <div class="summary-row">
+                                <span>Daily Rate:</span>
+                                <span id="summaryDailyRate"></span>
+                            </div>
+                            <div class="summary-row">
+                                <span>Number of Days:</span>
+                                <span id="summaryDays"></span>
+                            </div>
+                            <div class="summary-row total">
+                                <span>Total Amount:</span>
+                                <span id="summaryTotal"></span>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" onclick="closeBookingModal()">Cancel</button>
+                    <button type="button" class="btn btn-primary" onclick="submitBooking()">Confirm Booking</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <footer>
+            <div class="container">
+                <p>© 2025 PH Car Rental. All prices are in Philippine Peso (₱)</p>
+                <p>For inquiries: contact@phcarrental.com | +63 917 123 4567</p>
+            </div>
+        </footer>
+    </div>
+
+    <script>
+        // Car Data
+        const carsData = [
+            {
+                id: '1',
+                brand: 'Toyota',
+                model: 'Vios',
+                year: 2024,
+                type: 'Sedan',
+                pricePerDay: 1800,
+                availability: true,
+                transmission: 'Automatic',
+                seats: 5,
+                fuelType: 'Gasoline',
+                imageUrl: 'https://images.unsplash.com/photo-1683965362932-9d4224e6904f?w=400',
+                description: 'Perfect for city driving and long trips. Fuel-efficient and reliable, the Toyota Vios is a popular choice for families and business travelers.'
+            },
+            {
+                id: '2',
+                brand: 'Honda',
+                model: 'City',
+                year: 2024,
+                type: 'Sedan',
+                pricePerDay: 2000,
+                availability: true,
+                transmission: 'Automatic',
+                seats: 5,
+                fuelType: 'Gasoline',
+                imageUrl: 'https://images.unsplash.com/photo-1706495227612-fde52c357c69?w=400',
+                description: 'Spacious and comfortable sedan with modern features. Ideal for comfortable city trips and provincial tours.'
+            },
+            {
+                id: '3',
+                brand: 'Mitsubishi',
+                model: 'Montero Sport',
+                year: 2024,
+                type: 'SUV',
+                pricePerDay: 3500,
+                availability: true,
+                transmission: 'Automatic',
+                seats: 7,
+                fuelType: 'Diesel',
+                imageUrl: 'https://images.unsplash.com/photo-1638558167538-c359dbd7a1b6?w=400',
+                description: 'Powerful SUV perfect for family trips and adventures. With 7 seats and robust engine, great for mountain trips and long journeys.'
+            },
+            {
+                id: '4',
+                brand: 'Hyundai',
+                model: 'Accent',
+                year: 2023,
+                type: 'Sedan',
+                pricePerDay: 1600,
+                availability: true,
+                transmission: 'Automatic',
+                seats: 5,
+                fuelType: 'Gasoline',
+                imageUrl: 'https://images.unsplash.com/photo-1681361270520-4cc3961d3b00?w=400',
+                description: 'Budget-friendly option without compromising comfort. Great fuel economy and perfect for daily rentals.'
+            },
+            {
+                id: '5',
+                brand: 'Toyota',
+                model: 'Innova',
+                year: 2024,
+                type: 'MPV',
+                pricePerDay: 2800,
+                availability: true,
+                transmission: 'Manual',
+                seats: 7,
+                fuelType: 'Diesel',
+                imageUrl: 'https://images.unsplash.com/photo-1683965362932-9d4224e6904f?w=400',
+                description: 'The versatile MPV for Filipino families. Spacious interior perfect for barkada trips, family outings, or business use.'
+            },
+            {
+                id: '6',
+                brand: 'Toyota',
+                model: 'Hilux',
+                year: 2024,
+                type: 'Pickup',
+                pricePerDay: 3200,
+                availability: true,
+                transmission: 'Automatic',
+                seats: 5,
+                fuelType: 'Diesel',
+                imageUrl: 'https://images.unsplash.com/photo-1683965362932-9d4224e6904f?w=400',
+                description: 'Tough and reliable pickup truck. Ideal for rough terrain, cargo transport, and adventure trips.'
+            },
+            {
+                id: '7',
+                brand: 'Suzuki',
+                model: 'Ertiga',
+                year: 2024,
+                type: 'MPV',
+                pricePerDay: 2200,
+                availability: true,
+                transmission: 'Automatic',
+                seats: 7,
+                fuelType: 'Gasoline',
+                imageUrl: 'https://images.unsplash.com/photo-1706495227612-fde52c357c69?w=400',
+                description: 'Affordable 7-seater MPV perfect for families. Fuel-efficient and easy to drive in Metro Manila traffic.'
+            },
+            {
+                id: '8',
+                brand: 'Ford',
+                model: 'Everest',
+                year: 2023,
+                type: 'SUV',
+                pricePerDay: 3800,
+                availability: true,
+                transmission: 'Automatic',
+                seats: 7,
+                fuelType: 'Diesel',
+                imageUrl: 'https://images.unsplash.com/photo-1638558167538-c359dbd7a1b6?w=400',
+                description: 'Premium SUV with luxury features and powerful performance. Perfect for executive trips and special occasions.'
+            }
+        ];
+
+        let currentUser = null;
+        let userBookings = [];
+        let currentCar = null;
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            checkAuth();
+            setMinDate();
+        });
+
+        // Authentication Functions
+        function checkAuth() {
+            const user = localStorage.getItem('phCarRentalCurrentUser');
+            if (user) {
+                currentUser = JSON.parse(user);
+                showApp();
+            } else {
+                showAuth();
+            }
+        }
+
+        function showAuth() {
+            document.getElementById('authContainer').classList.remove('hidden');
+            document.getElementById('appContainer').classList.add('hidden');
+        }
+
+        function showApp() {
+            document.getElementById('authContainer').classList.add('hidden');
+            document.getElementById('appContainer').classList.remove('hidden');
+            document.getElementById('currentUserName').textContent = currentUser.name;
+            loadUserBookings();
+            renderCars();
+            updateBookingCount();
+        }
+
+        function showSignIn() {
+            document.getElementById('signInForm').classList.remove('hidden');
+            document.getElementById('signUpForm').classList.add('hidden');
+        }
+
+        function showSignUp() {
+            document.getElementById('signInForm').classList.add('hidden');
+            document.getElementById('signUpForm').classList.remove('hidden');
+        }
+
+        function handleSignUp(event) {
+            event.preventDefault();
+            
+            const name = document.getElementById('signUpName').value;
+            const email = document.getElementById('signUpEmail').value;
+            const phone = document.getElementById('signUpPhone').value;
+            const password = document.getElementById('signUpPassword').value;
+            const confirmPassword = document.getElementById('signUpConfirmPassword').value;
+
+            if (password !== confirmPassword) {
+                showToast('Passwords do not match', 'error');
+                return;
+            }
+
+            // Get all users
+            const users = JSON.parse(localStorage.getItem('phCarRentalUsers') || '[]');
+            
+            // Check if email already exists
+            if (users.find(u => u.email === email)) {
+                showToast('Email already registered', 'error');
+                return;
+            }
+
+            // Create new user
+            const newUser = {
+                id: Date.now().toString(),
+                name,
+                email,
+                phone,
+                password,
+                createdAt: new Date().toISOString()
+            };
+
+            users.push(newUser);
+            localStorage.setItem('phCarRentalUsers', JSON.stringify(users));
+
+            // Auto login
+            currentUser = { id: newUser.id, name: newUser.name, email: newUser.email, phone: newUser.phone };
+            localStorage.setItem('phCarRentalCurrentUser', JSON.stringify(currentUser));
+
+            showToast('Account created successfully!', 'success');
+            showApp();
+        }
+
+        function handleSignIn(event) {
+            event.preventDefault();
+            
+            const email = document.getElementById('signInEmail').value;
+            const password = document.getElementById('signInPassword').value;
+
+            const users = JSON.parse(localStorage.getItem('phCarRentalUsers') || '[]');
+            const user = users.find(u => u.email === email && u.password === password);
+
+            if (user) {
+                currentUser = { id: user.id, name: user.name, email: user.email, phone: user.phone };
+                localStorage.setItem('phCarRentalCurrentUser', JSON.stringify(currentUser));
+                showToast('Welcome back!', 'success');
+                showApp();
+            } else {
+                showToast('Invalid email or password', 'error');
+            }
+        }
+
+        function handleSignOut() {
+            if (confirm('Are you sure you want to sign out?')) {
+                localStorage.removeItem('phCarRentalCurrentUser');
+                currentUser = null;
+                userBookings = [];
+                showAuth();
+                showToast('Signed out successfully', 'success');
+            }
+        }
+
+        // Booking Functions
+        function loadUserBookings() {
+            const allBookings = JSON.parse(localStorage.getItem('phCarRentalBookings') || '[]');
+            userBookings = allBookings.filter(b => b.userId === currentUser.id);
+        }
+
+        function saveBooking(booking) {
+            const allBookings = JSON.parse(localStorage.getItem('phCarRentalBookings') || '[]');
+            allBookings.push(booking);
+            localStorage.setItem('phCarRentalBookings', JSON.stringify(allBookings));
+            loadUserBookings();
+        }
+
+        function updateBooking(booking) {
+            const allBookings = JSON.parse(localStorage.getItem('phCarRentalBookings') || '[]');
+            const index = allBookings.findIndex(b => b.id === booking.id);
+            if (index !== -1) {
+                allBookings[index] = booking;
+                localStorage.setItem('phCarRentalBookings', JSON.stringify(allBookings));
+                loadUserBookings();
+            }
+        }
+
+        function deleteBookingById(bookingId) {
+            const allBookings = JSON.parse(localStorage.getItem('phCarRentalBookings') || '[]');
+            const filtered = allBookings.filter(b => b.id !== bookingId);
+            localStorage.setItem('phCarRentalBookings', JSON.stringify(filtered));
+            loadUserBookings();
+        }
+
+        // Set minimum date to today
+        function setMinDate() {
+            const today = new Date().toISOString().split('T')[0];
+            const startDate = document.getElementById('startDate');
+            const endDate = document.getElementById('endDate');
+            if (startDate) startDate.min = today;
+            if (endDate) endDate.min = today;
+        }
+
+        // Render cars
+        function renderCars(cars = carsData) {
+            const grid = document.getElementById('carGrid');
+            const count = document.getElementById('carCount');
+            
+            count.textContent = `Showing ${cars.length} ${cars.length === 1 ? 'vehicle' : 'vehicles'}`;
+
+            if (cars.length === 0) {
+                grid.innerHTML = '<div class="empty-state"><h3>No vehicles found</h3><p>Try adjusting your search criteria</p></div>';
+                return;
+            }
+
+            grid.innerHTML = cars.map(car => `
+                <div class="car-card">
+                    <img src="${car.imageUrl}" alt="${car.brand} ${car.model}" class="car-image" onerror="this.style.backgroundColor='#667eea'">
+                    <div class="car-info">
+                        <div class="car-header">
+                            <div>
+                                <div class="car-title">${car.brand} ${car.model}</div>
+                                <div class="car-type">${car.type} • ${car.year}</div>
+                            </div>
+                            <span class="badge ${car.availability ? 'available' : 'booked'}">
+                                ${car.availability ? 'Available' : 'Booked'}
+                            </span>
+                        </div>
+                        <p class="car-description">${car.description}</p>
+                        <div class="car-specs">
+                            <div>👥 ${car.seats} Seats</div>
+                            <div>⚙️ ${car.transmission}</div>
+                            <div>⛽ ${car.fuelType}</div>
+                        </div>
+                        <div class="car-price">₱${car.pricePerDay.toLocaleString()}<span style="font-size: 1rem; color: #6b7280;">/day</span></div>
+                        <button class="btn btn-primary" onclick="openBookingModal('${car.id}')" ${!car.availability ? 'disabled' : ''}>
+                            ${car.availability ? '📅 Book Now' : 'Not Available'}
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Filter cars
+        function filterCars() {
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            const typeFilter = document.getElementById('typeFilter').value;
+
+            let filtered = carsData.filter(car => {
+                const matchesSearch = car.brand.toLowerCase().includes(searchTerm) ||
+                                    car.model.toLowerCase().includes(searchTerm) ||
+                                    car.description.toLowerCase().includes(searchTerm);
+                const matchesType = typeFilter === 'all' || car.type === typeFilter;
+                return matchesSearch && matchesType;
+            });
+
+            renderCars(filtered);
+        }
+
+        // Switch tabs
+        function switchTab(tabName) {
+            const buttons = document.querySelectorAll('.tab-button');
+            const contents = document.querySelectorAll('.tab-content');
+
+            buttons.forEach(btn => btn.classList.remove('active'));
+            contents.forEach(content => content.classList.remove('active'));
+
+            if (tabName === 'browse') {
+                buttons[0].classList.add('active');
+                document.getElementById('browseTab').classList.add('active');
+            } else {
+                buttons[1].classList.add('active');
+                document.getElementById('bookingsTab').classList.add('active');
+                renderBookings();
+            }
+        }
+
+        // Open booking modal
+        function openBookingModal(carId, bookingId = null) {
+            const modal = document.getElementById('bookingModal');
+            const car = carsData.find(c => c.id === carId);
+            
+            if (!car) return;
+
+            currentCar = car;
+            document.getElementById('carId').value = carId;
+            document.getElementById('modalTitle').textContent = `Book ${car.brand} ${car.model}`;
+
+            // Pre-fill with user data
+            document.getElementById('customerName').value = currentUser.name;
+            document.getElementById('email').value = currentUser.email;
+            document.getElementById('phoneNumber').value = currentUser.phone;
+
+            if (bookingId) {
+                // Edit mode
+                const booking = userBookings.find(b => b.id === bookingId);
+                if (booking) {
+                    document.getElementById('bookingId').value = bookingId;
+                    document.getElementById('destination').value = booking.destination;
+                    document.getElementById('startDate').value = booking.startDate;
+                    document.getElementById('endDate').value = booking.endDate;
+                    calculateTotal();
+                }
+            } else {
+                // New booking
+                document.getElementById('bookingId').value = '';
+                document.getElementById('destination').value = '';
+                document.getElementById('startDate').value = '';
+                document.getElementById('endDate').value = '';
+                document.getElementById('bookingSummary').style.display = 'none';
+            }
+
+            modal.classList.add('active');
+        }
+
+        // Close booking modal
+        function closeBookingModal() {
+            document.getElementById('bookingModal').classList.remove('active');
+            currentCar = null;
+        }
+
+        // Calculate total
+        function calculateTotal() {
+            const startDate = document.getElementById('startDate').value;
+            const endDate = document.getElementById('endDate').value;
+            const summary = document.getElementById('bookingSummary');
+
+            if (!startDate || !endDate || !currentCar) {
+                summary.style.display = 'none';
+                return;
+            }
+
+            const start = new Date(startDate);
+            const end = new Date(endDate);
+            const days = Math.ceil((end - start) / (1000 * 60 * 60 * 24)) + 1;
+
+            if (days < 1) {
+                summary.style.display = 'none';
+                return;
+            }
+
+            const total = days * currentCar.pricePerDay;
+
+            document.getElementById('summaryCarName').textContent = `${currentCar.brand} ${currentCar.model}`;
+            document.getElementById('summaryDailyRate').textContent = `₱${currentCar.pricePerDay.toLocaleString()}`;
+            document.getElementById('summaryDays').textContent = `${days} ${days === 1 ? 'day' : 'days'}`;
+            document.getElementById('summaryTotal').textContent = `₱${total.toLocaleString()}`;
+
+            summary.style.display = 'block';
+
+            // Update end date min
+            document.getElementById('endDate').min = startDate;
+        }
+
+        // Submit booking
+        function submitBooking() {
+            const form = document.getElementById('bookingForm');
+            
+            if (!form.checkValidity()) {
+                form.reportValidity();
+                return;
+            }
+
+            const carId = document.getElementById('carId').value;
+            const bookingId = document.getElementById('bookingId').value;
+            const car = carsData.find(c => c.id === carId);
+            
+            const startDate = document.getElementById('startDate').value;
+            const endDate = document.getElementById('endDate').value;
+            const start = new Date(startDate);
+            const end = new Date(endDate);
+            const totalDays = Math.ceil((end - start) / (1000 * 60 * 60 * 24)) + 1;
+
+            if (totalDays < 1) {
+                showToast('Please select valid dates', 'error');
+                return;
+            }
+
+            const bookingData = {
+                id: bookingId || `BK${Date.now()}`,
+                userId: currentUser.id,
+                carId: carId,
+                carName: `${car.brand} ${car.model}`,
+                customerName: document.getElementById('customerName').value,
+                email: document.getElementById('email').value,
+                phoneNumber: document.getElementById('phoneNumber').value,
+                destination: document.getElementById('destination').value,
+                startDate: startDate,
+                endDate: endDate,
+                totalDays: totalDays,
+                totalPrice: totalDays * car.pricePerDay,
+                bookingDate: new Date().toISOString()
+            };
+
+            if (bookingId) {
+                // Update existing booking
+                updateBooking(bookingData);
+                showToast('Booking updated successfully!', 'success');
+            } else {
+                // Create new booking
+                saveBooking(bookingData);
+                showToast('Booking confirmed! We will contact you shortly.', 'success');
+            }
+
+            updateBookingCount();
+            closeBookingModal();
+            switchTab('bookings');
+        }
+
+        // Render bookings
+        function renderBookings() {
+            const list = document.getElementById('bookingsList');
+
+            if (userBookings.length === 0) {
+                list.innerHTML = '<div class="empty-state"><h3>No bookings yet</h3><p>Book a car to see your reservations here</p></div>';
+                return;
+            }
+
+            list.innerHTML = userBookings.map(booking => `
+                <div class="booking-card">
+                    <div class="booking-header">
+                        <div>
+                            <h3>🚗 ${booking.carName}</h3>
+                            <div class="booking-id">Booking ID: ${booking.id}</div>
+                        </div>
+                        <span class="badge available">Confirmed</span>
+                    </div>
+                    <div class="booking-details">
+                        <div>
+                            <div class="detail-item">👤 ${booking.customerName}</div>
+                            <div class="detail-item">📧 ${booking.email}</div>
+                            <div class="detail-item">📱 ${booking.phoneNumber}</div>
+                        </div>
+                        <div>
+                            <div class="detail-item">📍 ${booking.destination}</div>
+                            <div class="detail-item">📅 ${formatDate(booking.startDate)} - ${formatDate(booking.endDate)}</div>
+                            <div class="detail-item">⏱️ ${booking.totalDays} ${booking.totalDays === 1 ? 'day' : 'days'}</div>
+                        </div>
+                        <div>
+                            <div class="detail-item" style="font-weight: 600; color: #667eea; font-size: 1.1rem;">
+                                💰 ₱${booking.totalPrice.toLocaleString()}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="booking-actions">
+                        <button class="btn btn-warning btn-small" onclick="openBookingModal('${booking.carId}', '${booking.id}')">
+                            ✏️ Edit
+                        </button>
+                        <button class="btn btn-danger btn-small" onclick="deleteBooking('${booking.id}')">
+                            🗑️ Delete
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Delete booking
+        function deleteBooking(bookingId) {
+            if (confirm('Are you sure you want to delete this booking?')) {
+                deleteBookingById(bookingId);
+                updateBookingCount();
+                renderBookings();
+                showToast('Booking deleted successfully', 'success');
+            }
+        }
+
+        // Update booking count
+        function updateBookingCount() {
+            const countEl = document.getElementById('bookingCount');
+            if (userBookings.length > 0) {
+                countEl.textContent = `(${userBookings.length})`;
+            } else {
+                countEl.textContent = '';
+            }
+        }
+
+        // Format date
+        function formatDate(dateString) {
+            const date = new Date(dateString);
+            const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+            return `${months[date.getMonth()]} ${date.getDate()}, ${date.getFullYear()}`;
+        }
+
+        // Show toast notification
+        function showToast(message, type = 'success') {
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            toast.textContent = message;
+            document.body.appendChild(toast);
+
+            setTimeout(() => {
+                toast.remove();
+            }, 3000);
+        }
+
+        // Close modal when clicking outside
+        document.addEventListener('click', function(e) {
+            const modal = document.getElementById('bookingModal');
+            if (e.target === modal) {
+                closeBookingModal();
+            }
+        });
+    </script>
+</body>
+</html>
